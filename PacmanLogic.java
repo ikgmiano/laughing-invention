@@ -12,7 +12,7 @@ public class PacmanLogic {
     private static volatile int[][] MAP = generateMap(30);
     private static JLabel MAP_LABEL;
 
-    private static double moveSpeed =10; // tiles per second, can be 1, 2, or 3
+    private static double moveSpeed = 10; // tiles per second, can be 1, 2, or 3
     private static double moveAccumulator = 0; // tracks time since last tile move
 
     private static volatile int CURRENT_X_LOCATION = 1;
@@ -181,7 +181,7 @@ public class PacmanLogic {
         }
 
 
-        if (canMove(newX, newY)) {
+        if (isMoveValid(newX, newY)) {
             CURRENT_X_LOCATION = newX;
             CURRENT_Y_LOCATION = newY;
         }
@@ -201,13 +201,15 @@ public class PacmanLogic {
             case Direction.LEFT -> newX = (newX - 1 + xLength) % xLength;
         }
 
-        return canMove(newX, newY);
+        return isMoveValid(newX, newY);
     }
 
-    private static boolean canMove(int x, int y) {
+    // Determines if the given (x, y) coordinate is valid, that means it's within the
+    // map's bounds and is not a wall.
+    private static boolean isMoveValid(int x, int y) {
         return (x >= 0 && x < MAP[0].length) // Within the bounds of the map.
             && (y >= 0 && y < MAP.length)
-            && MAP[y][x] != 1; // Not a wall.
+               && MAP[y][x] != 1; // Not a wall.
     }
 
     private static void render() {
