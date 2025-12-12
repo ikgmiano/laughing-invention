@@ -138,8 +138,6 @@ public class PacmanLogic {
     }
 
     private static void update() {
-        // move();
-
         double deltaTime = 1.0 / FPS; // 60 FPS → ~0.0167s per frame
         moveAccumulator += deltaTime;
 
@@ -151,65 +149,66 @@ public class PacmanLogic {
     };
 
     private static void move() {
-        // Check if buffered next move is allowed
-        // check for bounds and check for availability of movement
-        // update current location
+        boolean allowMove = false;
 
-        /*
-            if can move desiredDirection
-                currentDirection = desiredDirection
-
-            actual movement update
-        */
-
-        if (canChangeDirection()) {
+        if (isMoveValid(desiredDirection)) {
             currentDirection = desiredDirection;
+            allowMove = true;
+        } else if (isMoveValid(currentDirection)) {
+            allowMove = true;
         }
+
+        // Updates the current (x,y) coordinate.
+        if (allowMove) {
+            CURRENT_X_LOCATION = getNewXCoordinate(currentDirection);
+            CURRENT_Y_LOCATION = getNewYCoordinate(currentDirection);
+        }
+    }
+
+    // Determines if the current (x,y) is valid if moved from the given direction.
+    private static boolean isMoveValid(Direction direction) {
+        int newX = getNewXCoordinate(direction);
+        int newY = getNewYCoordinate(direction);
+
+        return (newX >= 0 && newX < MAP[0].length) // Within the bounds of the map.
+            && (newY >= 0 && newY < MAP.length)
+               && MAP[newY][newX] != 1; // Not a wall.
+    }
+    
+    // Increment x-coordinate based on the direction. Allows wrapping to 
+    // opposite side if possible.
+    private static int getNewXCoordinate(Direction direction) {
+        int xBound = MAP[0].length;
         
-        int newX = CURRENT_X_LOCATION;
-        int newY = CURRENT_Y_LOCATION;
-
-        int xLength = MAP[0].length;
-        int yLength = MAP.length;
-
-        // Increment xy coordinate based on the current movement direction.
-        switch (currentDirection) {
-            case Direction.UP -> newY = (newY - 1 + yLength) % yLength;
-            case Direction.DOWN -> newY = (newY + 1) % yLength;
-            case Direction.RIGHT -> newX = (newX + 1) % xLength;
-            case Direction.LEFT -> newX = (newX - 1 + xLength) % xLength;
-        }
-
-
-        if (isMoveValid(newX, newY)) {
-            CURRENT_X_LOCATION = newX;
-            CURRENT_Y_LOCATION = newY;
+        switch (direction) {
+            case Direction.LEFT -> {
+                return (CURRENT_X_LOCATION - 1 + xBound) % xBound;
+            }
+            case Direction.RIGHT -> {
+                return (CURRENT_X_LOCATION + 1) % xBound;
+            }
+            default -> {
+                return CURRENT_X_LOCATION;
+            }
         }
     }
+    
+    // Increment y-coordinate based on the direction. Allows wrapping to 
+    // opposite side if possible.
+    private static int getNewYCoordinate(Direction direction) {
+        int yBound = MAP.length;
 
-    private static boolean canChangeDirection() {
-        int newX = CURRENT_X_LOCATION;
-        int newY = CURRENT_Y_LOCATION;
-
-        int xLength = MAP[0].length;
-        int yLength = MAP.length;
-
-        switch (desiredDirection) {
-            case Direction.UP -> newY = (newY - 1 + yLength) % yLength;
-            case Direction.DOWN -> newY = (newY + 1) % yLength;
-            case Direction.RIGHT -> newX = (newX + 1) % xLength;
-            case Direction.LEFT -> newX = (newX - 1 + xLength) % xLength;
+        switch (direction) {
+            case Direction.UP -> {
+                return (CURRENT_Y_LOCATION - 1 + yBound) % yBound;
+            }
+            case Direction.DOWN -> {
+                return (CURRENT_Y_LOCATION + 1) % yBound;
+            }
+            default -> {
+                return CURRENT_Y_LOCATION;
+            }
         }
-
-        return isMoveValid(newX, newY);
-    }
-
-    // Determines if the given (x, y) coordinate is valid, that means it's within the
-    // map's bounds and is not a wall.
-    private static boolean isMoveValid(int x, int y) {
-        return (x >= 0 && x < MAP[0].length) // Within the bounds of the map.
-            && (y >= 0 && y < MAP.length)
-               && MAP[y][x] != 1; // Not a wall.
     }
 
     private static void render() {
