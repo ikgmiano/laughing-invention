@@ -249,17 +249,19 @@ public class PacmanLogic {
                     int x = col * blockWidth;
                     int y = row * blockHeight;
 
+                    // For corridor or wall.
+                    if (MAP[row][col] == 1) {
+                        g.setColor(Color.BLUE);
+                    } else {
+                        g.setColor(Color.BLACK);
+                    }
+
+                    g.fillRect(x, y, blockWidth, blockHeight);
+
                     // Pacman is in the current (x,y) coordinate.
                     if (row == CURRENT_Y_LOCATION && col == CURRENT_X_LOCATION) {
                         g.setColor(Color.yellow);
                         g.fillOval(x, y, blockWidth, blockHeight);
-                    // For corridor or wall.
-                    } else {
-                        switch (MAP[row][col]) {
-                            case 0 -> g.setColor(Color.BLACK);
-                            case 1 -> g.setColor(Color.BLUE);
-                        }
-                        g.fillRect(x, y, blockWidth, blockHeight);
                     }
                 }
             }
