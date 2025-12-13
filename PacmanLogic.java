@@ -130,20 +130,15 @@ public class PacmanLogic {
     };
 
     private static void move() {
-        boolean allowMove = false;
-
         if (isMoveValid(desiredDirection)) {
             currentDirection = desiredDirection;
-            allowMove = true;
-        } else if (isMoveValid(currentDirection)) {
-            allowMove = true;
+        } else if (!isMoveValid(currentDirection)) {
+            return;
         }
 
         // Updates the current (x,y) coordinate.
-        if (allowMove) {
-            CURRENT_X_LOCATION = getNewXCoordinate(currentDirection);
-            CURRENT_Y_LOCATION = getNewYCoordinate(currentDirection);
-        }
+        CURRENT_X_LOCATION = getNewXCoordinate(currentDirection);
+        CURRENT_Y_LOCATION = getNewYCoordinate(currentDirection);
     }
 
     // Determines if the current (x,y) is valid if moved from the given direction.
