@@ -191,10 +191,14 @@ public class PacmanLogic {
         }
     }
 
+    // Paints the current state of the array map environment on the MAP_PANEL.
     private static void render() {
         MAP_PANEL.repaint();
     };
 
+    // Returns a double array representing the game environment.
+    // 1-Wall, 0-Corridor
+    // Could possibly add 2 as a pellet, or maybe create a whole new array for that? idk yet.
     private static int[][] generateMap() {
         return new int[][] {
             { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1 },
@@ -225,6 +229,7 @@ public class PacmanLogic {
         };
     }
 
+    // Custom JPanel that paints the current state of array map environment.
     static class MapPanel extends JPanel {
         @Override
         public void paintComponent(Graphics g) {
@@ -233,6 +238,8 @@ public class PacmanLogic {
             int rows = MAP.length;
             int columns = MAP[0].length;
 
+            // Width/Height of one block corresponding to one element in the
+            // map array. Varies depending on the size of the JPanel
             int blockWidth = getWidth() / columns;
             int blockHeight = getHeight() / rows;
 
@@ -242,9 +249,11 @@ public class PacmanLogic {
                     int x = col * blockWidth;
                     int y = row * blockHeight;
 
+                    // Pacman is in the current (x,y) coordinate.
                     if (row == CURRENT_Y_LOCATION && col == CURRENT_X_LOCATION) {
                         g.setColor(Color.yellow);
                         g.fillOval(x, y, blockWidth, blockHeight);
+                    // For corridor or wall.
                     } else {
                         switch (MAP[row][col]) {
                             case 0 -> g.setColor(Color.BLACK);
