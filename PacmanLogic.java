@@ -9,33 +9,16 @@ public class PacmanLogic {
 
     private static volatile boolean IS_RUNNING = false;
 
-    private static volatile int[][] MAP = generateMap(30);
-    private static JLabel MAP_LABEL;
+    private static JPanel MAP_PANEL;
+    private static int[][] MAP = generateMap(30);
 
-    private static double moveSpeed = 10; // tiles per second, can be 1, 2, or 3
+    private static double moveSpeed = 10;
     private static double moveAccumulator = 0; // tracks time since last tile move
 
     private static volatile int CURRENT_X_LOCATION = 1;
     private static volatile int CURRENT_Y_LOCATION = 1;
     private static Direction currentDirection = Direction.LEFT;
     private static Direction desiredDirection = Direction.LEFT;
-
-    private enum Character {
-        WALL("<span style='color:blue;'>" + '\u2588' + "</span>"),
-        EMPTY("<span style='color:white;'>" + '\u2588' + "</span>"),
-        // PLAYER('\u25CF');
-        PLAYER("<span style='color:yellow;'>" + '\u2588' + "</span>");
-
-        private final String value;
-
-        Character(String value) {
-            this.value = value;
-        }
-
-        public String getValue() {
-            return value;
-        }        
-    }
 
     private enum Direction {
         LEFT,
@@ -90,23 +73,20 @@ public class PacmanLogic {
             }
         });
 
-        JLabel map = new JLabel();
-        map.setFont(new Font("Monospaced", Font.PLAIN, 16));
-        map.setHorizontalAlignment(SwingConstants.LEFT);
-        map.setVerticalAlignment(SwingConstants.TOP);
-        MAP_LABEL = map;
+        MapPanel MapPanel = new MapPanel();
+        MAP_PANEL = MapPanel;
 
         frame.add(startButton, BorderLayout.LINE_START);
         frame.add(stopButton, BorderLayout.LINE_END);
-        frame.add(map, BorderLayout.CENTER);
+        frame.add(MapPanel, BorderLayout.CENTER);
         
-        frame.setSize(1000, 1000);
+        frame.pack();
+        frame.setResizable(false);
         frame.setLocationRelativeTo(null);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
-
-        frame.requestFocus();
     }
+
     private static void startGameLoop() {
         new Thread(() -> {
             while (IS_RUNNING) {
@@ -212,23 +192,7 @@ public class PacmanLogic {
     }
 
     private static void render() {
-        StringBuilder s = new StringBuilder();
-
-        s.append("<html><pre style='font-family:monospace;'>");
-        for (int i = 0; i < MAP.length; i++) {
-            for (int j = 0; j < MAP[i].length; j++) {;
-                if (i == CURRENT_Y_LOCATION && j == CURRENT_X_LOCATION) {
-                    s.append(Character.PLAYER.getValue());
-                } else {
-                    s.append(MAP[i][j] == 0 ? Character.EMPTY.getValue() : Character.WALL.getValue());
-                }
-                // s += "  ";
-            }
-            s.append("\n");
-        }
-        s.append("</pre></html>");
-
-        MAP_LABEL.setText(s.toString());
+        MAP_PANEL.repaint();
     };
 
     private static int[][] generateMap(int dimension) {
@@ -272,11 +236,45 @@ public class PacmanLogic {
             { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1 }  // 24
         };
 
-
-
-
-
-
         return map;
     }
+
+    static class MapPanel extends JPanel {
+        @Override
+        public void paintComponent(Graphics g) {
+            super.paintComponent(g);
+
+            int rows = MAP.length;
+            int columns = MAP[0].length;
+
+            int blockWidth = getWidth() / columns;
+            int blockHeight = getHeight() / rows;
+
+            for (int row = 0; row < rows; row++) {
+                for (int col = 0; col < columns; col++) {
+                    // Pixel location of top-left corner of the block
+                    int x = col * blockWidth;
+                    int y = row * blockHeight;
+
+                    if (row == CURRENT_Y_LOCATION && col == CURRENT_X_LOCATION) {
+                        g.setColor(Color.yellow);
+                        g.fillOval(x, y, blockWidth, blockHeight);
+                    } else {
+                        switch (MAP[row][col]) {
+                            case 0 -> g.setColor(Color.BLACK);
+                            case 1 -> g.setColor(Color.BLUE);
+                        }
+                        g.fillRect(x, y, blockWidth, blockHeight);
+                    }
+                }
+            }
+        }
+
+        @Override
+        public Dimension getPreferredSize() {
+            return new Dimension(800, 800);
+        }
+    }
 }
+
+
