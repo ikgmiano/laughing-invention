@@ -77,8 +77,13 @@ public class PacmanLogic {
         MapPanel MapPanel = new MapPanel();
         MAP_PANEL = MapPanel;
 
-        frame.add(startButton, BorderLayout.LINE_START);
-        frame.add(stopButton, BorderLayout.LINE_END);
+        JPanel panel = new JPanel();
+        panel.setLayout(new GridLayout(1, 2));
+        panel.add(startButton);
+        panel.add(stopButton);
+        // frame.add(startButton, BorderLayout.LINE_START);
+        // frame.add(stopButton, BorderLayout.LINE_END);
+        frame.add(panel, BorderLayout.NORTH);
         frame.add(MapPanel, BorderLayout.CENTER);
         
         frame.pack();
@@ -197,7 +202,7 @@ public class PacmanLogic {
     // Could possibly add 2 as a pellet, or maybe create a whole new array for that? idk yet.
     private static int[][] generateMap() {
         return new int[][] {
-            {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
+            {1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1},
             {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
             {1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 0, 1},
             {1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 0, 1},
@@ -224,7 +229,7 @@ public class PacmanLogic {
             {1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1},
             {1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1},
             {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-            {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
+            {1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1}
         };
     }
 
@@ -285,7 +290,7 @@ public class PacmanLogic {
 
         @Override
         public Dimension getPreferredSize() {
-            return new Dimension(800, 800);
+            return new Dimension(500, 500);
         }
     }
 }
