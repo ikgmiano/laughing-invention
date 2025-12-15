@@ -9,6 +9,9 @@ public class PacmanLogic {
     private static int FPS = 60;
     private static long TIME_PER_FRAME = 1000L / FPS;
     private static int frameCounter = 0;
+    private static int speed = 10; // Number of frames before each move() call.
+
+    private static boolean mouthOpen = false;
 
     private static JPanel MAP_PANEL;
     private static int[][] MAP = generateMap();
@@ -19,10 +22,7 @@ public class PacmanLogic {
     private static volatile int CURRENT_Y_LOCATION = 1;
     private static Direction currentDirection = Direction.LEFT;
     private static Direction desiredDirection = Direction.LEFT;
-    
-    private static boolean mouthOpen = false;
-    private static int speed = 10; // Higher is slower.
-    
+
     private enum Direction {
         LEFT,
         RIGHT,
@@ -104,10 +104,10 @@ public class PacmanLogic {
                 render();
 
                 long end = System.currentTimeMillis();
-                long elapsed = end - start;
-
+                
                 // Calculate remaining frames left. Positvie means game ran too fast
                 // and can sleep to maintain desired FPS. Negative == FPS drop. 
+                long elapsed = end - start;
                 long wait = TIME_PER_FRAME - elapsed;
 
                 if (wait > 0) {
@@ -261,29 +261,30 @@ public class PacmanLogic {
 
                     g.fillRect(x, y, blockWidth, blockHeight);
 
-                    // Pacman is in the current (x,y) coordinate.
-                    if (row == CURRENT_Y_LOCATION && col == CURRENT_X_LOCATION) {
-                        g.setColor(Color.yellow);
-
-                        if (mouthOpen) {
-                            // Draw full circle (mouth closed)
-                            g.fillOval(x, y, blockWidth, blockHeight);
-                        } else {
-                            // Draw "open mouth" as a wedge
-                            int startAngle = 30;
-                            int arcAngle = 300;
-
-                            switch (currentDirection) {
-                                case Direction.RIGHT -> startAngle = 30;
-                                case Direction.LEFT  -> startAngle = 210;
-                                case Direction.UP    -> startAngle = 120;
-                                case Direction.DOWN  -> startAngle = 300;
-                            }
-                            
-                            g.fillArc(x, y, blockWidth, blockHeight, startAngle, arcAngle);
-                        }
-                    }
                 }
+            }
+            // Draw pacman.
+            int x = CURRENT_X_LOCATION * blockWidth;
+            int y = CURRENT_Y_LOCATION * blockHeight;
+
+            g.setColor(Color.yellow);
+
+            if (mouthOpen) {
+                // Draw full circle (mouth closed)
+                g.fillOval(x, y, blockWidth, blockHeight);
+            } else {
+                // Draw "open mouth" as a wedge
+                int startAngle = 30;
+                int arcAngle = 300;
+
+                switch (currentDirection) {
+                    case Direction.RIGHT -> startAngle = 30;
+                    case Direction.LEFT  -> startAngle = 210;
+                    case Direction.UP    -> startAngle = 120;
+                    case Direction.DOWN  -> startAngle = 300;
+                }
+                
+                g.fillArc(x, y, blockWidth, blockHeight, startAngle, arcAngle);
             }
         }
 
