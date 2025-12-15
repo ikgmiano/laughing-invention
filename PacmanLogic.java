@@ -4,23 +4,25 @@ import java.awt.event.*;
 import javax.swing.*;
 
 public class PacmanLogic {
+    private static volatile boolean IS_RUNNING = false;
+    
     private static int FPS = 60;
     private static long TIME_PER_FRAME = 1000L / FPS;
-
-    private static volatile boolean IS_RUNNING = false;
+    private static int frameCounter = 0;
 
     private static JPanel MAP_PANEL;
     private static int[][] MAP = generateMap();
-
-    private static boolean mouthOpen = false;
-    private static int frameCounter = 0;
-    private static int speed = 10; // Higher is slower.
+    private static int xBound = MAP[0].length;
+    private static int yBound = MAP.length;
 
     private static volatile int CURRENT_X_LOCATION = 1;
     private static volatile int CURRENT_Y_LOCATION = 1;
     private static Direction currentDirection = Direction.LEFT;
     private static Direction desiredDirection = Direction.LEFT;
-
+    
+    private static boolean mouthOpen = false;
+    private static int speed = 10; // Higher is slower.
+    
     private enum Direction {
         LEFT,
         RIGHT,
@@ -115,7 +117,6 @@ public class PacmanLogic {
                         e.printStackTrace();
                     }
                 }
-                
             }
 
             System.out.println("GameLoop: Interrupted.");
@@ -142,52 +143,50 @@ public class PacmanLogic {
         }
 
         // Updates the current (x,y) coordinate.
-        CURRENT_X_LOCATION = getNewXCoordinate(currentDirection);
-        CURRENT_Y_LOCATION = getNewYCoordinate(currentDirection);
+        CURRENT_X_LOCATION = 
+                (CURRENT_X_LOCATION + getDeltaX(currentDirection) + xBound) % xBound;
+        CURRENT_Y_LOCATION = 
+                (CURRENT_Y_LOCATION + getDeltaY(currentDirection) + yBound) % yBound;
     }
 
     // Determines if the current (x,y) is valid if moved from the given direction.
     private static boolean isMoveValid(Direction direction) {
-        int newX = getNewXCoordinate(direction);
-        int newY = getNewYCoordinate(direction);
+        int newX = (CURRENT_X_LOCATION + getDeltaX(direction) + xBound) % xBound;
+        int newY = (CURRENT_Y_LOCATION + getDeltaY(direction) + yBound) % yBound;
 
-        return (newX >= 0 && newX < MAP[0].length) // Within the bounds of the map.
-            && (newY >= 0 && newY < MAP.length)
+        return (newX >= 0 && newX < xBound) // Within the bounds of the map.
+            && (newY >= 0 && newY < yBound)
                && MAP[newY][newX] != 1; // Not a wall.
     }
     
     // Increment x-coordinate based on the direction. Allows wrapping to 
     // opposite side if possible.
-    private static int getNewXCoordinate(Direction direction) {
-        int xBound = MAP[0].length;
-        
+    private static int getDeltaX(Direction direction) {
         switch (direction) {
             case Direction.LEFT -> {
-                return (CURRENT_X_LOCATION - 1 + xBound) % xBound;
+                return -1;
             }
             case Direction.RIGHT -> {
-                return (CURRENT_X_LOCATION + 1) % xBound;
+                return +1;
             }
             default -> {
-                return CURRENT_X_LOCATION;
+                return 0;
             }
         }
     }
     
     // Increment y-coordinate based on the direction. Allows wrapping to 
     // opposite side if possible.
-    private static int getNewYCoordinate(Direction direction) {
-        int yBound = MAP.length;
-
+    private static int getDeltaY(Direction direction) {
         switch (direction) {
             case Direction.UP -> {
-                return (CURRENT_Y_LOCATION - 1 + yBound) % yBound;
+                return -1;
             }
             case Direction.DOWN -> {
-                return (CURRENT_Y_LOCATION + 1) % yBound;
+                return +1;
             }
             default -> {
-                return CURRENT_Y_LOCATION;
+                return 0;
             }
         }
     }
@@ -290,7 +289,7 @@ public class PacmanLogic {
 
         @Override
         public Dimension getPreferredSize() {
-            return new Dimension(500, 500);
+            return new Dimension(700, 700);
         }
     }
 }
